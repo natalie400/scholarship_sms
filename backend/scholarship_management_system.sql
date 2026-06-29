@@ -270,6 +270,31 @@ UNLOCK TABLES;
 COMMIT;
 SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
 
+
+
+ALTER TABLE scholarship
+ADD CONSTRAINT fk_scholarship_signatory
+FOREIGN KEY (sigID)
+REFERENCES signatory(sigID);
+
+ALTER TABLE application
+ADD CONSTRAINT fk_application_student
+FOREIGN KEY (studentID)
+REFERENCES student(studentID);
+
+ALTER TABLE application
+ADD CONSTRAINT fk_application_scholarship
+FOREIGN KEY (scholarshipID)
+REFERENCES scholarship(scholarshipID);
+
+ALTER TABLE application
+ADD CONSTRAINT fk_application_signatory
+FOREIGN KEY (sigID)
+REFERENCES signatory(sigID);
+
+
+
+
 --
 -- Table structure for table `verify_signup`
 --
