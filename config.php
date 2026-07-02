@@ -102,4 +102,21 @@ function getPdoConnection() {
         die("PDO Connection failed: " . $e->getMessage());
     }
 }
+
+/**
+ * Ensure scholarship approval timestamp column exists.
+ * This keeps older databases compatible with new reporting logic.
+ */
+function ensureScholarshipApprovedAtColumn($conn) {
+    if (!$conn) {
+        return;
+    }
+
+    $result = $conn->query("SHOW COLUMNS FROM scholarship LIKE 'approved_at'");
+    if ($result && $result->num_rows > 0) {
+        return;
+    }
+
+    $conn->query("ALTER TABLE scholarship ADD COLUMN approved_at DATETIME NULL DEFAULT NULL AFTER adminapproval");
+}
 ?>

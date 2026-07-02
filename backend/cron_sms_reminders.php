@@ -68,13 +68,13 @@ foreach ($scholarshipsClosingSoon as $sch) {
 
     if (!empty($phonesToAlert)) {
         $msg = "ScholarConnect: The deadline for '{$schName}' is in 3 days! Don't miss out on this matching opportunity. Apply now.";
-        SmsService::sendSms($phonesToAlert, $msg);
+        SmsService::sendSms($phonesToAlert, $msg, 'deadline_reminder', 'cron_reminder');
         $totalSmsSent += count($phonesToAlert);
     }
 
     if (!empty($phonesDraft)) {
         $msg = "ScholarConnect: Your application for '{$schName}' is incomplete. Please submit it before the deadline in 3 days!";
-        SmsService::sendSms($phonesDraft, $msg);
+        SmsService::sendSms($phonesDraft, $msg, 'application_readiness', 'cron_reminder');
         $totalSmsSent += count($phonesDraft);
     }
 }

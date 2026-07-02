@@ -415,6 +415,17 @@ body.app-shell {
     background: rgba(15, 118, 110, 0.25);
 }
 
+.app-nav > ul > li.submenu.current > ul {
+    border-left-color: rgba(34, 197, 94, 0.62);
+}
+
+.app-nav > ul > li.submenu > ul li.current > a,
+.app-nav > ul > li.submenu > ul li > a.app-active {
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(15, 118, 110, 0.92) 0%, rgba(34, 197, 94, 0.92) 100%);
+    box-shadow: 0 8px 16px rgba(15, 118, 110, 0.28);
+}
+
 .app-nav > ul > li:last-child {
     margin-top: 0.55rem;
     padding-top: 0.75rem;

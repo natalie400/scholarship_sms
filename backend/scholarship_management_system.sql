@@ -162,6 +162,7 @@ CREATE TABLE `scholarship` (
   `links` varchar(1024) NOT NULL,
   `contact` varchar(1024) NOT NULL,
   `adminapproval` varchar(20) NOT NULL,
+  `approved_at` datetime DEFAULT NULL,
   `previous_adminapproval` varchar(20) NOT NULL,
   `schstatus` varchar(20) NOT NULL DEFAULT 'active',
   PRIMARY KEY (`scholarshipID`)
@@ -175,10 +176,10 @@ CREATE TABLE `scholarship` (
 SET @OLD_AUTOCOMMIT=@@AUTOCOMMIT, @@AUTOCOMMIT=0;
 LOCK TABLES `scholarship` WRITE;
 /*!40000 ALTER TABLE `scholarship` DISABLE KEYS */;
-INSERT INTO `scholarship` VALUES
-(34,9,'Test 1','Nairobi','Kibera','select','select','Any','','sports_talent','2026-06-20',10,'$400','testtt','testtt','testtt','testtt','testtt','testtt','Approved','Pending','active'),
-(35,9,'MICROSOFT FELLOWSHIP','Nairobi','Mathare','diploma','male+female','Low','','technology_based','2026-06-18',10,'$400','This is the description','computer knowledge','Accomodation','Contact us.','https://teams.cloud.microsoft/','Contact us','Approved','Pending','active'),
-(36,9,'MICROSOFT FELLOWSHIP PT II','Nairobi','Kibera','undergraduate','male+female','Low','','technology_based','2026-06-20',23,'$4000','Endless fun!!','Come prepared','Accomodation','contact us','https://teams.cloud.microsoft/','https://teams.cloud.microsoft/','Approved','Pending','active');
+INSERT INTO `scholarship` (`scholarshipID`,`sigID`,`schname`,`schlocation`,`schlocationfrom`,`degree`,`gender`,`target_financial_need`,`religion`,`sch`,`appDeadline`,`granteesNum`,`funding`,`description`,`eligibility`,`benefits`,`apply`,`links`,`contact`,`adminapproval`,`approved_at`,`previous_adminapproval`,`schstatus`) VALUES
+(34,9,'Test 1','Nairobi','Kibera','select','select','Any','','sports_talent','2026-06-20',10,'$400','testtt','testtt','testtt','testtt','testtt','testtt','Approved',NULL,'Pending','active'),
+(35,9,'MICROSOFT FELLOWSHIP','Nairobi','Mathare','diploma','male+female','Low','','technology_based','2026-06-18',10,'$400','This is the description','computer knowledge','Accomodation','Contact us.','https://teams.cloud.microsoft/','Contact us','Approved',NULL,'Pending','active'),
+(36,9,'MICROSOFT FELLOWSHIP PT II','Nairobi','Kibera','undergraduate','male+female','Low','','technology_based','2026-06-20',23,'$4000','Endless fun!!','Come prepared','Accomodation','contact us','https://teams.cloud.microsoft/','https://teams.cloud.microsoft/','Approved',NULL,'Pending','active');
 /*!40000 ALTER TABLE `scholarship` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -291,6 +292,30 @@ ALTER TABLE application
 ADD CONSTRAINT fk_application_signatory
 FOREIGN KEY (sigID)
 REFERENCES signatory(sigID);
+
+
+--
+-- Table structure for table `sms_dispatch_log`
+--
+
+DROP TABLE IF EXISTS `sms_dispatch_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sms_dispatch_log` (
+  `log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `recipient` varchar(32) NOT NULL,
+  `message_preview` varchar(255) NOT NULL,
+  `message_type` varchar(50) NOT NULL DEFAULT 'general',
+  `trigger_source` varchar(50) NOT NULL DEFAULT 'manual',
+  `provider_http_code` int(11) NOT NULL DEFAULT 0,
+  `provider_status` varchar(20) NOT NULL DEFAULT 'failed',
+  `provider_message` varchar(255) NOT NULL DEFAULT '',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`log_id`),
+  KEY `idx_sms_dispatch_log_created_at` (`created_at`),
+  KEY `idx_sms_dispatch_log_status` (`provider_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 

@@ -16,6 +16,7 @@ require '../config.php';
 	try{
 		 // Connect to database
     	$conn = getDbConnection();
+		ensureScholarshipApprovedAtColumn($conn);
 
   		// Checks Connection
     	if ($conn->connect_error) {
@@ -53,20 +54,21 @@ require '../config.php';
 			$links = $postOrEmpty('links');
 			$contact = $postOrEmpty('contact');
 			$adminapproval = $postOrEmpty('adminapproval');
+			$approvedAt = ($adminapproval === 'Approved') ? date('Y-m-d H:i:s') : null;
 			$schID = 0;
 
 	// Religion field was removed from the form; keep empty value for current DB schema.
 	$religionn = '';
 
 
-			$sql = "INSERT INTO scholarship (sigID,schname, schlocation,schlocationfrom,degree, gender, religion, target_financial_need, sch, appDeadline, granteesNum, funding, description, eligibility, benefits, apply, links, contact, adminapproval, previous_adminapproval) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			$sql = "INSERT INTO scholarship (sigID,schname, schlocation,schlocationfrom,degree, gender, religion, target_financial_need, sch, appDeadline, granteesNum, funding, description, eligibility, benefits, apply, links, contact, adminapproval, approved_at, previous_adminapproval) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			$stmt = $conn->prepare($sql);
 			if ($stmt === false) {
 				$flag = 0;
 				echo "Error preparing statement: " . $conn->error;
 			} else {
 				$stmt->bind_param(
-					"isssssssssisssssssss",
+					"isssssssssissssssssss",
 					$currentUserID,
 					$name,
 					$schlocation,
@@ -86,6 +88,7 @@ require '../config.php';
 					$links,
 					$contact,
 					$adminapproval,
+					$approvedAt,
 					$adminapproval
 				);
 
@@ -152,6 +155,7 @@ require '../config.php';
 				$stmt->close();
 			}
 			if($flag==1){
+			$fileupload = '';
 			$folder=$schID;
 			mkdir("../scholarship/$folder/");
 				if(is_uploaded_file($_FILES['validate']['tmp_name'])) {
@@ -193,6 +197,7 @@ require '../config.php';
 			$links = $postOrEmpty('links');
 			$contact = $postOrEmpty('contact');
 			$adminapproval = $postOrEmpty('adminapproval');
+			$approvedAt = ($adminapproval === 'Approved') ? date('Y-m-d H:i:s') : null;
 
 	// Religion field was removed from the form; keep empty value for current DB schema.
 	$religionn = '';
@@ -201,7 +206,7 @@ require '../config.php';
 			$sql = "UPDATE scholarship SET schlocation = ?,schlocationfrom = ?,
 			  degree = ?,gender = ?, religion = ?, target_financial_need = ?, sch = ?, appDeadline = ?,
               granteesNum = ?, funding = ?, description = ?, eligibility = ?,
-              benefits = ?, apply = ?, links = ?, contact = ?, adminapproval = ?
+							benefits = ?, apply = ?, links = ?, contact = ?, adminapproval = ?, approved_at = ?
               WHERE scholarshipID = ? ";
 			$stmt = $conn->prepare($sql);
 			if ($stmt === false) {
@@ -209,7 +214,7 @@ require '../config.php';
 				echo "Error preparing update statement: " . $conn->error;
 			} else {
 				$stmt->bind_param(
-					"ssssssssissssssssi",
+					"ssssssssisssssssssi",
 					$schlocation,
 					$schlocationfrom,
 					$degree,
@@ -227,6 +232,7 @@ require '../config.php';
 					$links,
 					$contact,
 					$adminapproval,
+					$approvedAt,
 					$schID
 				);
 
@@ -263,6 +269,7 @@ require '../config.php';
 			}
 
 			if($flag==1){
+			$fileupload = '';
 			$folder=$schID;
       echo $folder;
 			$dir = "../scholarship/$folder/";

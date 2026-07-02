@@ -75,7 +75,7 @@ if ($messageType !== '') {
 }
 
 $finalMessage = $prefix . ': ' . $messageText;
-$smsResult = SmsService::sendSms($phone, $finalMessage);
+$smsResult = SmsService::sendSms($phone, $finalMessage, $messageType, 'signatory_manual');
 
 if (!empty($smsResult['status'])) {
     header('Location: ../signatory/tempSigHome.php?sms_status=ok&sms_message=' . urlencode('SMS sent to ' . $studentName . '.'));

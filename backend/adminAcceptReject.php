@@ -14,6 +14,7 @@ try{
 		/*Open a connection to mySQL*/
 		// Connect to database
     	$conn = getDbConnection();
+		ensureScholarshipApprovedAtColumn($conn);
 
 		  // Checks Connection
 	    if ($conn->connect_error) {
@@ -32,7 +33,7 @@ try{
 				$notifyEmail = $infoRow['upMail'];
 				$notifyScholarship = $infoRow['schname'];
 			}
-			$sql = "UPDATE `scholarship` SET `adminapproval` = 'Approved' WHERE `scholarship`.`scholarshipID` = $schID;";
+			$sql = "UPDATE `scholarship` SET `adminapproval` = 'Approved', `approved_at` = NOW() WHERE `scholarship`.`scholarshipID` = $schID;";
 			if ($conn->query($sql) === TRUE) {
 				$emailTemplate = email_tpl_scholarship_approved($notifyScholarship);
 				$subject = $emailTemplate['subject'];
@@ -49,7 +50,7 @@ try{
                 }
                 if (!empty($phones)) {
                     $smsMsg = "New Scholarship Alert! '{$notifyScholarship}' matches your profile. Log in to ScholarConnect to apply.";
-                    SmsService::sendSms($phones, $smsMsg);
+					SmsService::sendSms($phones, $smsMsg, 'new_scholarship_alert', 'admin_approval');
                 }
 		 ?>
 			<script type="text/javascript">
@@ -80,7 +81,7 @@ try{
 				$notifyEmail = $infoRow['upMail'];
 				$notifyScholarship = $infoRow['schname'];
 			}
-			$sql = "UPDATE `scholarship` SET `adminapproval` = 'Rejected' WHERE `scholarship`.`scholarshipID` = $schID;";
+			$sql = "UPDATE `scholarship` SET `adminapproval` = 'Rejected', `approved_at` = NULL WHERE `scholarship`.`scholarshipID` = $schID;";
 			if ($conn->query($sql) === TRUE) {
 				$emailTemplate = email_tpl_scholarship_rejected($notifyScholarship);
 				$subject = $emailTemplate['subject'];

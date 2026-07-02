@@ -14,6 +14,7 @@ $conn = getDbConnection();
 if ($conn->connect_error) {
     die('Connection failed: ' . $conn->connect_error);
 }
+ensureScholarshipApprovedAtColumn($conn);
 
 $sigID = (int) ($_POST['sigID'] ?? 0);
 $schname = trim($_POST['schname'] ?? '');
@@ -55,11 +56,13 @@ $contact = '';
 $adminapproval = 'Approved';
 $previousAdminApproval = 'Approved';
 
+$approvedAt = ($adminapproval === 'Approved') ? date('Y-m-d H:i:s') : null;
+
 $sql = "INSERT INTO scholarship (
             sigID, schname, schlocation, schlocationfrom, degree, gender, religion,
             target_financial_need, sch, appDeadline, granteesNum, funding, description,
-            eligibility, benefits, apply, links, contact, adminapproval, previous_adminapproval
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            eligibility, benefits, apply, links, contact, adminapproval, approved_at, previous_adminapproval
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
 if ($stmt === false) {
@@ -69,7 +72,7 @@ if ($stmt === false) {
 }
 
 $stmt->bind_param(
-    'isssssssssisssssssss',
+    'isssssssssissssssssss',
     $sigID,
     $schname,
     $schlocation,
@@ -89,6 +92,7 @@ $stmt->bind_param(
     $links,
     $contact,
     $adminapproval,
+    $approvedAt,
     $previousAdminApproval
 );
 
@@ -138,7 +142,7 @@ if ($stmt->execute()) {
     }
     if (!empty($phones)) {
         $smsMsg = "New Scholarship Alert! '{$schname}' matches your profile. Log in to ScholarConnect to apply.";
-        SmsService::sendSms($phones, $smsMsg);
+        SmsService::sendSms($phones, $smsMsg, 'new_scholarship_alert', 'admin_create_opportunity');
     }
 
     echo "<script>alert('Opportunity created successfully.'); window.location.href='../admin/tempAdmin.php';</script>";
